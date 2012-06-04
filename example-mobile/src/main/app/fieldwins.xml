@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" 
+xmlns:json="http://www.mulesoft.org/schema/mule/json" 
+xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+xmlns:jersey="http://www.mulesoft.org/schema/mule/jersey" 
+xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" 
+xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
+xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" 
+xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+xmlns:spring="http://www.springframework.org/schema/beans" 
+xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+xmlns:salesforce="http://www.mulesoft.org/schema/mule/sfdc" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+version="EE-3.3.0" 
+xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/jersey http://www.mulesoft.org/schema/mule/jersey/current/mule-jersey.xsd 
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd 
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/4.0/mule-sfdc.xsd 
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd 
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd 
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/4.0/mule-sfdc.xsd ">
+    <sfdc:config name="sfconnector" username="xxxxxx" password="xxxxxxx" securityToken="xxxxxxx" doc:name="Salesforce"/>
+    <smtp:gmail-connector name="Gmail" validateConnections="true" doc:name="Gmail"/>
+    <flow name="fieldwinsFlow1" doc:name="fieldwinsFlow1">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8881" doc:name="HTTP"/>
+        <jersey:resources doc:name="REST">
+            <component class="SFREST"/>
+        </jersey:resources>
+        <scripting:transformer doc:name="Groovy">
+            <scripting:script engine="Groovy">
+                <scripting:text><![CDATA[return message.getInvocationProperty("jersey_response").getResponse().getEntity().toString()]]></scripting:text>
+            </scripting:script>
+        </scripting:transformer>
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="Json-to-Object"/>
+        <all doc:name="All">
+            <processor-chain>
+                <sfdc:create config-ref="sfconnector" type="Opportunity" doc:name="Salesforce">
+                    <sfdc:objects>
+                        <sfdc:object>
+                            <sfdc:inner-object key="AccountId">#[groovy:payload.account]</sfdc:inner-object>
+                            <sfdc:inner-object key="Description">#[groovy:payload.description]</sfdc:inner-object>
+                            <sfdc:inner-object key="StageName">#[groovy:payload.stage]</sfdc:inner-object>
+                            <sfdc:inner-object key="Name">#[groovy:payload.name]</sfdc:inner-object>
+                            <sfdc:inner-object key="Amount">#[groovy:payload.amount]</sfdc:inner-object>
+                            <sfdc:inner-object key="CloseDate">#[groovy:payload.date]</sfdc:inner-object>
+                        </sfdc:object>
+                    </sfdc:objects>
+                </sfdc:create>
+                <scripting:transformer doc:name="Groovy">
+                    <scripting:script engine="Groovy">
+                        <scripting:text><![CDATA[println payload
+println payload.getClass()
+return payload.first()]]></scripting:text>
+                    </scripting:script>
+                </scripting:transformer>
+                <object-to-string-transformer doc:name="Object-to-String"/>
+            </processor-chain>
+            <processor-chain>
+                <expression-filter expression="#[groovy:payload.amount.toInteger() &gt; 10]" doc:name="Expression"/>
+                <object-to-string-transformer doc:name="Object-to-String"/>
+                <smtp:outbound-endpoint host="smtp.gmail.com" port="587" user="xxxxx" password="xxxxxx" to="xxxxxxx" from="xxxxxxx" subject="Mule Studio Demo" doc:name="SMTP"/>
+            </processor-chain>
+        </all>
+    </flow>
+</mule>

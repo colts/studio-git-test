@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="fieldwins">
+    <global-element type="http://www.mulesoft.org/schema/mule/sfdc/config" name="Salesforce" entity-id="04dd1b88-9dcb-41df-9d9d-c26c0f2b5dd2">
+        <properties>
+            <property value="sfconnector" name="name"/>
+            <property value="xxxxxx" name="username"/>
+            <property value="xxxxxxx" name="password"/>
+            <property value="xxxxxxx" name="securityToken"/>
+            <property name="url"/>
+            <property name="proxyHost"/>
+            <property name="proxyPort"/>
+            <property name="proxyUsername"/>
+            <property name="proxyPassword"/>
+            <property name="objectStore-ref"/>
+        </properties>
+    </global-element>
+    <global-element type="http://www.mulesoft.org/schema/mule/smtp/gmail-connector" name="Gmail" entity-id="ceb571ad-34b1-4396-b179-55923c1e804e">
+        <properties>
+            <property value="Gmail" name="name"/>
+            <property name="bccAddresses"/>
+            <property name="ccAddresses"/>
+            <property name="contentType"/>
+            <property name="fromAddress"/>
+            <property name="replyToAddresses"/>
+            <property name="subject"/>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="dynamicNotification"/>
+            <property value="true" name="validateConnections"/>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="fieldwinsFlow1">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="USE_TRANSACTION_ID"/>
+            <property name="tracking:transaction-id"/>
+        </properties>
+        <lane hadOnlyOneElement="false" entity-id="8d1cc953-8bc6-4f15-b07f-eb7d758551fe">
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="e3181f04-baf2-49ae-8a24-799585a2c85f">
+                <properties>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="httpLabel"/>
+                    <property value="localhost" name="host"/>
+                    <property value="8881" name="port"/>
+                    <property name="path"/>
+                    <property name="method"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="followRedirects"/>
+                    <property name="connector-ref"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="user"/>
+                    <property name="password"/>
+                    <property name="contentType"/>
+                    <property name="keep-alive"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/jersey/resources" name="REST" entity-id="0da6acc4-eea7-4e2d-8a17-5dd9fadd73e2">
+                <properties>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/component;0">
+                        <property value="SFREST" name="class"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/scripting/groovyTransformer" name="Groovy" entity-id="62f8ccb3-9467-4f8f-9c34-d8c5b48cac6a">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script;0">
+                        <property value="return message.getInvocationProperty(&quot;jersey_response&quot;).getResponse().getEntity().toString()" name="text"/>
+                        <property value="Groovy" name="engine"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/json/json-to-object-transformer" name="Json-to-Object" entity-id="3c2e1903-63d0-4672-9b52-7bbf8ac5f80d">
+                <properties>
+                    <property value="java.util.Map" name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property name="mapper-ref"/>
+                </properties>
+            </pattern>
+            <splitter type="org.mule.tooling.ui.modules.core.pattern.all" name="All" entity-id="c803cb9d-efb8-4834-a028-f8d65d2daadc">
+                <pattern type="org.mule.tooling.ui.modules.core.pattern.all" name="All" entity-id="2801b616-91ae-4d95-b962-03cf1152fefa"/>
+                <compartment entity-id="2b7cb2f2-72f0-4045-8e2a-e1e9002fcf08">
+                    <lane hadOnlyOneElement="false" entity-id="c9086094-c55b-4f97-bb9c-b79357cad99c">
+                        <pattern type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" name="Salesforce" entity-id="56dd58f6-0f3e-4a5b-a3ca-8bcb566086eb">
+                            <properties>
+<property value="sfconnector" name="config-ref"/>
+<property value="http://www.mulesoft.org/schema/mule/sfdc/create" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+<property value="sfconnector" name="config-ref"/>
+<property value="Opportunity" name="type"/>
+<property name=""/>
+<property name="username"/>
+<property name="password"/>
+<property name="securityToken"/>
+<property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/create-objects;0">
+    <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/create-object;1">
+        <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-create-object;1">
+            <property value="#[groovy:payload.account]" name="value"/>
+            <property value="AccountId" name="key"/>
+        </property-collection>
+        <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-create-object;6">
+            <property value="#[groovy:payload.date]" name="value"/>
+            <property value="CloseDate" name="key"/>
+        </property-collection>
+        <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-create-object;5">
+            <property value="#[groovy:payload.amount]" name="value"/>
+            <property value="Amount" name="key"/>
+        </property-collection>
+        <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-create-object;4">
+            <property value="#[groovy:payload.name]" name="value"/>
+            <property value="Name" name="key"/>
+        </property-collection>
+        <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-create-object;3">
+            <property value="#[groovy:payload.stage]" name="value"/>
+            <property value="StageName" name="key"/>
+        </property-collection>
+        <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-create-object;2">
+            <property value="#[groovy:payload.description]" name="value"/>
+            <property value="Description" name="key"/>
+        </property-collection>
+    </property-collection>
+</property-collection>
+                            </properties>
+                        </pattern>
+                        <pattern type="http://www.mulesoft.org/schema/mule/scripting/groovyTransformer" name="Groovy" entity-id="1a703e0c-a1ed-4705-aa9a-e93419d212bd">
+                            <properties>
+<property name="returnClass"/>
+<property name="ignoreBadInput"/>
+<property name="encoding"/>
+<property name="mimeType"/>
+<property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script;0">
+    <property value="println payload&#xA;println payload.getClass()&#xA;return payload.first()" name="text"/>
+    <property value="Groovy" name="engine"/>
+</property-collection>
+                            </properties>
+                        </pattern>
+                        <pattern type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" name="Object-to-String" entity-id="6c4e93b1-b6f3-4af6-bff5-657cf9681d1f">
+                            <properties>
+<property name="returnClass"/>
+<property name="ignoreBadInput"/>
+<property name="encoding"/>
+<property name="mimeType"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                    <lane hadOnlyOneElement="false" entity-id="17f3f254-f6d1-4b00-821f-d48e81f539ab">
+                        <pattern type="org.mule.tooling.ui.modules.core.filter.Expression" name="Expression" entity-id="94abb6ba-f382-43e6-a561-60fb8ea60215">
+                            <properties>
+<property value="#[groovy:payload.amount.toInteger() &gt; 10]" name="expression"/>
+<property name="nullReturnsTrue"/>
+                            </properties>
+                        </pattern>
+                        <pattern type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" name="Object-to-String" entity-id="a251e635-74e4-44f9-a3a1-d73c3c160044">
+                            <properties>
+<property name="returnClass"/>
+<property name="ignoreBadInput"/>
+<property name="encoding"/>
+<property name="mimeType"/>
+                            </properties>
+                        </pattern>
+                        <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/smtps/endpoint" name="SMTP" entity-id="dfad1a46-c04a-4ae9-8e45-e0789c8a54b4">
+                            <properties>
+<property value="one-way" name="exchange-pattern"/>
+<property value="smtp.gmail.com" name="host"/>
+<property value="587" name="port"/>
+<property value="xxxxx" name="user"/>
+<property value="xxxxxx" name="password"/>
+<property value="xxxxxxx" name="to"/>
+<property value="xxxxxxx" name="from"/>
+<property value="Mule Studio Demo" name="subject"/>
+<property name="cc"/>
+<property name="bcc"/>
+<property name="replyTo"/>
+<property name="businessEventsLabel"/>
+<property name="tracking:enable-default-events"/>
+<property name="address"/>
+<property name="responseTimeout"/>
+<property name="encoding"/>
+<property name="disableTransportTransformer"/>
+<property name="mimeType"/>
+<property name="connector-ref"/>
+<property name="ref"/>
+<property name="transformer-refs"/>
+<property value="http://www.mulesoft.org/schema/mule/smtp/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+<property value="smtp.gmail.com" name="host"/>
+<property value="587" name="port"/>
+<property value="xxxxx" name="user"/>
+<property value="xxxxxx" name="password"/>
+<property value="xxxxxxx" name="to"/>
+<property value="xxxxxxx" name="from"/>
+<property value="Mule Studio Demo" name="subject"/>
+<property name="cc"/>
+<property name="bcc"/>
+<property name="replyTo"/>
+<property name="businessEventsLabel"/>
+<property name="tracking:enable-default-events"/>
+<property name="address"/>
+<property name="responseTimeout"/>
+<property name="encoding"/>
+<property name="disableTransportTransformer"/>
+<property name="mimeType"/>
+<property name="connector-ref"/>
+<property name="ref"/>
+<property name="transformer-refs"/>
+                            </properties>
+                        </endpoint>
+                    </lane>
+                </compartment>
+            </splitter>
+        </lane>
+    </flow>
+</mule-configuration>
