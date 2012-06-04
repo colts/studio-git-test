@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" 
+    xmlns:http="http://www.mulesoft.org/schema/mule/http"
+    xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+    xmlns:spring="http://www.springframework.org/schema/beans" 
+    xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    version="EE-3.3.0"
+    xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd  
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd  
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/core  http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <flow name="Echo" doc:name="Echo"
+        doc:description="This is a simple echo example. We use an HTTP endpoint and an echo component.  To invoke the Echo flow hit the following URL: http://localhost:8787/echo">
+        <http:inbound-endpoint exchange-pattern="request-response"
+            host="localhost" port="8787" path="echo" encoding="UTF-8" mimeType="text/plain"
+            contentType="text/plain" doc:name="HTTP"
+            doc:description="The HTTPS endpoint allows Mule to send and recieve requests securely using HTTP over SSL protocol." />
+        <echo-component doc:name="Echo" doc:description="Echoes message payload." />
+    </flow>
+</mule>

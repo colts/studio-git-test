@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="Echo">
+    <flow SubFlow="false" name="Echo">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="USE_TRANSACTION_ID"/>
+            <property name="tracking:transaction-id"/>
+        </properties>
+        <description>This is a simple echo example. We use an HTTP endpoint and an echo component.  To invoke the Echo flow hit the following URL: http://localhost:8787/echo</description>
+        <lane hadOnlyOneElement="false" entity-id="c9170808-bd4f-4a9d-8383-8190195ecd4b">
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="42990b6c-6b7f-4c32-8d4d-cfca184e1d94">
+                <properties>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="httpLabel"/>
+                    <property value="localhost" name="host"/>
+                    <property value="8787" name="port"/>
+                    <property value="echo" name="path"/>
+                    <property name="method"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="address"/>
+                    <property value="UTF-8" name="encoding"/>
+                    <property name="disableTransportTransformer"/>
+                    <property value="text/plain" name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="followRedirects"/>
+                    <property name="connector-ref"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="user"/>
+                    <property name="password"/>
+                    <property value="text/plain" name="contentType"/>
+                    <property name="keep-alive"/>
+                </properties>
+                <description>The HTTPS endpoint allows Mule to send and recieve requests securely using HTTP over SSL protocol.</description>
+            </endpoint>
+            <pattern type="org.mule.tooling.ui.modules.core.pattern.echo" name="Echo" entity-id="79959a3d-4ec0-4e58-92e4-f0e25218c55c">
+                <description>Echoes message payload.</description>
+            </pattern>
+        </lane>
+    </flow>
+</mule-configuration>

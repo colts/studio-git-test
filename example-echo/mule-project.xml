@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-project xmlns="http://www.mulesoft.com/tooling/project" runtimeId="org.mule.servers.3.3.0.EE">
+    <name>example-echo</name>
+    <description>This is a simple echo example.
+We use an HTTP endpoint and an echo component.
+
+To invoke the Echo flow hit the following URL:
+http://localhost:8787/echo</description>
+</mule-project>
