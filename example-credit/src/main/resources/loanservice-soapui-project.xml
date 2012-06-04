@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="loanservice" resourceRoot="" soapui-version="3.6.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="LoanRequestSOAP" type="wsdl" bindingName="{http://www.mulesoft.org/demo/LoanRequest/}LoanRequestSOAP" soapVersion="1_1" anonymous="optional" definition="file:/Users/albinkjellin/Documents/mule/mulestudio/demos/creditcheck/src/main/resources/loanservice.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/Users/albinkjellin/Documents/mule/mulestudio/demos/creditcheck/src/main/resources/loanservice.wsdl"><con:part><con:url>file:/Users/albinkjellin/Documents/mule/mulestudio/demos/creditcheck/src/main/resources/loanservice.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="LoanRequest" targetNamespace="http://www.mulesoft.org/demo/LoanRequest/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.mulesoft.org/demo/LoanRequest/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.mulesoft.org/demo/LoanRequest/">
+      <xsd:element name="LoanReq">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="CustomerId" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="LoanResp">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="CreditRating" type="xsd:string"/>
+            <xsd:element name="Rate" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="LoanReq">
+    <wsdl:part element="tns:LoanReq" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="LoanResp">
+    <wsdl:part element="tns:LoanResp" name="parameters"/>
+  </wsdl:message>
+  <wsdl:portType name="LoanRequest">
+    <wsdl:operation name="LoanRequest">
+      <wsdl:input message="tns:LoanReq"/>
+      <wsdl:output message="tns:LoanResp"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="LoanRequestSOAP" type="tns:LoanRequest">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="LoanRequest">
+      <soap:operation soapAction="http://www.mulesoft.org/demo/LoanRequest/LoanRequest"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="LoanRequest">
+    <wsdl:port binding="tns:LoanRequestSOAP" name="LoanRequestSOAP">
+      <soap:address location="http://localhost:8881/loan/loanrequest/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8881/loan/loanrequest/</con:endpoint></con:endpoints><con:operation isOneWay="false" action="http://www.mulesoft.org/demo/LoanRequest/LoanRequest" name="LoanRequest" bindingOperationName="LoanRequest" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8881/loan/loanrequest/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:loan="http://www.mulesoft.org/demo/LoanRequest/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <loan:LoanReq>
+         <CustomerId>David Eason</CustomerId>
+      </loan:LoanReq>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.mulesoft.org/demo/LoanRequest/LoanRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/></con:soapui-project>

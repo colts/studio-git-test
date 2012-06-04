@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf" xmlns:jdbc="http://www.mulesoft.org/schema/mule/ee/jdbc" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="EE-3.3.0" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd 
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd 
+http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd 
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd 
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd 
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd 
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <notifications>  
+        <notification event="CONTEXT"/>  
+        <notification-listener ref="SetupDatabaseNotificationListener"/> 
+    </notifications>
+    <json:json-to-object-transformer returnClass="java.util.Map" name="JSON_to_Object" doc:name="JSON to Object"/>
+    <jms:activemq-connector name="Active_MQ" specification="1.1" brokerURL="vm://localhost:61616" validateConnections="true" doc:name="Active MQ"/>
+    <object-to-string-transformer name="Object_to_String" doc:name="Object to String"/>
+    <jdbc:connector name="JDBC" dataSource-ref="DataBeanDerby" validateConnections="true" queryTimeout="-1" pollingFrequency="0" doc:name="JDBC">
+        <jdbc:query key="ins" value="insert into loanreq values(#[mule:message.id], #[variable:creditrating], #[variable:rate])"/>
+    </jdbc:connector>
+    <spring:beans>
+        <spring:bean id="SetupDatabaseNotificationListener" class="org.mulesoft.test.db.SetupDatabaseNotificationListener"/>
+        <spring:bean id="activeMqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"/>
+        <spring:bean id="DataBean" name="DataBean" class="org.enhydra.jdbc.standard.StandardDataSource">
+            <spring:property name="url" value="jdbc:mysql://localhost/loanreq?user=root&amp;password="/>
+            <spring:property name="driverName" value="com.mysql.jdbc.Driver"/>
+        </spring:bean>
+        <spring:bean id="DataBeanDerby" name="DataBeanDerby" class="org.enhydra.jdbc.standard.StandardDataSource">
+            <spring:property name="url" value="jdbc:derby:memory:loanreq;create=true"/>
+            <spring:property name="driverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+        </spring:bean>
+    </spring:beans>
+    <flow name="ESB_BankLoanApplication_Process" doc:name="ESB_BankLoanApplication_Process">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8881" path="loan/loanrequest" doc:name="HTTP"/>
+        <cxf:jaxws-service port="80" serviceClass="org.mulesoft.samples.loan.LoanRequest" doc:name="SOAP"/>
+        <enricher doc:name="Credit Status Service">
+            <http:outbound-endpoint exchange-pattern="request-response" host="localhost" port="8882" path="creditcheck/#[groovy: payload.customerId]" responseTransformer-refs="JSON_to_Object" doc:name="Credit Status Check"/>
+            <enrich source="#[map-payload:creditstatus]" target="#[variable:creditRating]"></enrich>
+            <enrich source="#[map-payload:creditstatus]" target="#[variable:creditRating]"/>
+        </enricher>
+        <enricher source="#[xpath:/linked-hash-map/entry/double]" target="#[variable:rate]" doc:name="Interest Rate Service">
+            <jms:outbound-endpoint exchange-pattern="request-response" queue="interest.rate.in" connector-ref="Active_MQ" transformer-refs="Object_to_String" doc:name="Retrieve Interest Rate"/>
+        </enricher>
+        <jdbc:outbound-endpoint exchange-pattern="request-response" queryKey="ins" responseTimeout="10000" mimeType="text/plain" queryTimeout="-1" connector-ref="JDBC" doc:name="Data Warehouse - Store"/>
+        <scripting:transformer doc:name="Calculate Response">
+            <scripting:script engine="Groovy">
+                <scripting:text><![CDATA[import org.mulesoft.samples.loan.LoanResp
+                def lresp = new LoanResp()
+                lresp.setCreditRating(message.getInvocationProperty('creditrating'))
+				lresp.setRate(message.getInvocationProperty('rate'))
+                return lresp]]></scripting:text>
+            </scripting:script>
+        </scripting:transformer>
+    </flow>
+    <flow name="HTTPCreditRatingService" doc:name="HTTPCreditRatingService">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8882" path="creditcheck" doc:name="HTTP"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <scripting:transformer doc:name="Simulate Backend Rating System">
+            <scripting:script engine="Groovy">
+                <scripting:text><![CDATA[def ran = Math.random()
+				if(ran > 0.5){
+					return ['applicantId':'Test Person', 'creditstatus':'high']
+				}else{
+					return ['applicantId':'Test Person', 'creditstatus':'low']
+				}]]></scripting:text>
+            </scripting:script>
+        </scripting:transformer>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    <flow name="JMSRateService" doc:name="JMSRateService">
+        <jms:inbound-endpoint exchange-pattern="request-response" queue="interest.rate.in" connector-ref="Active_MQ" doc:name="JMS"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <scripting:transformer doc:name="Simulate Get Rate">
+            <scripting:script engine="Groovy">
+                <scripting:text><![CDATA[return ['rate':Math.random()]]]></scripting:text>
+            </scripting:script>
+        </scripting:transformer>
+        <mulexml:object-to-xml-transformer doc:name="Object to XML"/>
+    </flow>
+</mule>

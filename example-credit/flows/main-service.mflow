@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="main-service">
+    <global-unknown entity-id="27b2c75a-f37c-492c-bed4-007dc6472498">
+        <content>&lt;notifications xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot;&gt; 
+        &lt;notification event=&quot;CONTEXT&quot;/&gt;  
+        &lt;notification-listener ref=&quot;SetupDatabaseNotificationListener&quot;/&gt;  
+    &lt;/notifications&gt;</content>
+    </global-unknown>
+    <global-element type="http://www.mulesoft.org/schema/mule/json/json-to-object-transformer" name="JSON to Object" entity-id="56432d03-6356-494d-a021-3b89c65a0a0e">
+        <properties>
+            <property value="java.util.Map" name="returnClass"/>
+            <property name="ignoreBadInput"/>
+            <property name="encoding"/>
+            <property name="mimeType"/>
+            <property name="mapper-ref"/>
+            <property value="JSON_to_Object" name="name"/>
+        </properties>
+    </global-element>
+    <global-element type="org.mule.tooling.ui.modules.core.global.activemq.config" name="Active MQ" entity-id="8fe4edee-c88c-4442-9b1b-ad53a831fe8f">
+        <properties>
+            <property value="Active_MQ" name="name"/>
+            <property value="1.1" name="specification"/>
+            <property name="username"/>
+            <property name="password"/>
+            <property value="vm://localhost:61616" name="brokerURL"/>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="dynamicNotification"/>
+            <property value="true" name="validateConnections"/>
+            <property name="jndiInitialFactory"/>
+            <property name="jndiProviderUrl"/>
+            <property name="connectionFactoryJndiName"/>
+            <property name="jndiProviderProperties-ref"/>
+            <property name="jndiDestinations"/>
+            <property name="forceJndiDestinations"/>
+            <property name="acknowledgementMode"/>
+            <property name="clientId"/>
+            <property name="maxRedelivery"/>
+            <property name="redeliveryHandlerFactory-ref"/>
+            <property name="numberOfConsumers"/>
+            <property name="durable"/>
+            <property name="noLocal"/>
+            <property name="persistentDelivery"/>
+            <property name="honorQosHeaders"/>
+            <property name="cacheJmsSessions"/>
+            <property name="eagerConsumer"/>
+            <property name="disableTemporaryReplyToDestinations"/>
+            <property name="embeddedMode"/>
+            <property name="connectionFactory-ref"/>
+            <property value="http://www.mulesoft.org/schema/mule/jms/activemq-connector" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+            <property value="Active_MQ" name="name"/>
+            <property value="1.1" name="specification"/>
+            <property name="username"/>
+            <property name="password"/>
+            <property value="vm://localhost:61616" name="brokerURL"/>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="dynamicNotification"/>
+            <property value="true" name="validateConnections"/>
+            <property name="jndiInitialFactory"/>
+            <property name="jndiProviderUrl"/>
+            <property name="connectionFactoryJndiName"/>
+            <property name="jndiProviderProperties-ref"/>
+            <property name="jndiDestinations"/>
+            <property name="forceJndiDestinations"/>
+            <property name="acknowledgementMode"/>
+            <property name="clientId"/>
+            <property name="maxRedelivery"/>
+            <property name="redeliveryHandlerFactory-ref"/>
+            <property name="numberOfConsumers"/>
+            <property name="durable"/>
+            <property name="noLocal"/>
+            <property name="persistentDelivery"/>
+            <property name="honorQosHeaders"/>
+            <property name="cacheJmsSessions"/>
+            <property name="eagerConsumer"/>
+            <property name="disableTemporaryReplyToDestinations"/>
+            <property name="embeddedMode"/>
+            <property name="connectionFactory-ref"/>
+            <property value="http://www.mulesoft.org/schema/mule/jms/activemq-connector" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+        </properties>
+    </global-element>
+    <global-element type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" name="Object to String" entity-id="c1ca161b-be16-4261-a094-b30273b4a83f">
+        <properties>
+            <property name="returnClass"/>
+            <property name="ignoreBadInput"/>
+            <property name="encoding"/>
+            <property name="mimeType"/>
+            <property value="Object_to_String" name="name"/>
+        </properties>
+    </global-element>
+    <global-element type="http://www.mulesoft.org/schema/mule/ee/jdbc/connector" name="JDBC" entity-id="7bf4535f-6ee1-4cd2-ace1-fd60779bae9f">
+        <properties>
+            <property value="JDBC" name="name"/>
+            <property value="DataBeanDerby" name="dataSource-ref to JDBC DataSource"/>
+            <property value="DataBeanDerby" name="dataSource-ref to Bean"/>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="queryRunner-ref"/>
+            <property name="resultSetHandler-ref"/>
+            <property name="dynamicNotification"/>
+            <property value="true" name="validateConnections"/>
+            <property name="transactionPerMessage"/>
+            <property value="-1" name="queryTimeout"/>
+            <property value="0" name="pollingFrequency"/>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
+                <property value="insert into loanreq values(#[mule:message.id], #[variable:creditrating], #[variable:rate])" name="value"/>
+                <property value="ins" name="key"/>
+            </property-collection>
+        </properties>
+    </global-element>
+    <global-element type="http://www.springframework.org/schema/beans/bean" name="Bean" entity-id="08f5c591-f3aa-45b1-8eb2-5471c4ca705e">
+        <properties>
+            <property value="SetupDatabaseNotificationListener" name="id"/>
+            <property value="org.mulesoft.test.db.SetupDatabaseNotificationListener" name="class"/>
+            <property name="parent"/>
+            <property name="scope"/>
+            <property name="children"/>
+            <property name="abstract"/>
+            <property name="lazy-init"/>
+            <property name="autowire"/>
+            <property name="depends-on"/>
+            <property name="autowire-candidate"/>
+            <property name="primary"/>
+            <property name="init-method"/>
+            <property name="destroy-method"/>
+            <property name="factory-method"/>
+            <property name="factory-bean"/>
+        </properties>
+    </global-element>
+    <global-element type="http://www.springframework.org/schema/beans/bean" name="Bean" entity-id="8abe566c-8c09-49f0-adcf-5fff5a219a45">
+        <properties>
+            <property value="activeMqConnectionFactory" name="id"/>
+            <property value="org.apache.activemq.ActiveMQConnectionFactory" name="class"/>
+            <property name="parent"/>
+            <property name="scope"/>
+            <property name="children"/>
+            <property name="abstract"/>
+            <property name="lazy-init"/>
+            <property name="autowire"/>
+            <property name="depends-on"/>
+            <property name="autowire-candidate"/>
+            <property name="primary"/>
+            <property name="init-method"/>
+            <property name="destroy-method"/>
+            <property name="factory-method"/>
+            <property name="factory-bean"/>
+        </properties>
+    </global-element>
+    <global-element type="http://www.springframework.org/schema/beans/bean" name="Bean" entity-id="d2141c9a-47e8-476c-a64f-ea81ad86e212">
+        <properties>
+            <property value="DataBean" name="id"/>
+            <property value="DataBean" name="name"/>
+            <property value="org.enhydra.jdbc.standard.StandardDataSource" name="class"/>
+            <property name="parent"/>
+            <property name="scope"/>
+            <property name="children"/>
+            <property name="abstract"/>
+            <property name="lazy-init"/>
+            <property name="autowire"/>
+            <property name="depends-on"/>
+            <property name="autowire-candidate"/>
+            <property name="primary"/>
+            <property name="init-method"/>
+            <property name="destroy-method"/>
+            <property name="factory-method"/>
+            <property name="factory-bean"/>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;0">
+                <property value="url" name="name"/>
+                <property value="jdbc:mysql://localhost/loanreq?user=root&amp;password=" name="value"/>
+            </property-collection>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;1">
+                <property value="driverName" name="name"/>
+                <property value="com.mysql.jdbc.Driver" name="value"/>
+            </property-collection>
+        </properties>
+    </global-element>
+    <global-element type="http://www.springframework.org/schema/beans/bean" name="DerbyBean" entity-id="d61eb5bd-ae73-4192-886a-1a2554c81329">
+        <properties>
+            <property value="DataBeanDerby" name="id"/>
+            <property value="DataBeanDerby" name="name"/>
+            <property value="org.enhydra.jdbc.standard.StandardDataSource" name="class"/>
+            <property name="parent"/>
+            <property name="scope"/>
+            <property name="children"/>
+            <property name="abstract"/>
+            <property name="lazy-init"/>
+            <property name="autowire"/>
+            <property name="depends-on"/>
+            <property name="autowire-candidate"/>
+            <property name="primary"/>
+            <property name="init-method"/>
+            <property name="destroy-method"/>
+            <property name="factory-method"/>
+            <property name="factory-bean"/>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;0">
+                <property value="url" name="name"/>
+                <property value="jdbc:derby:memory:loanreq;create=true" name="value"/>
+            </property-collection>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;1">
+                <property value="driverName" name="name"/>
+                <property value="org.apache.derby.jdbc.EmbeddedDriver" name="value"/>
+            </property-collection>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="ESB_BankLoanApplication_Process">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="USE_TRANSACTION_ID"/>
+            <property name="tracking:transaction-id"/>
+        </properties>
+        <lane hadOnlyOneElement="false" entity-id="96af8f00-cfd6-4bde-afb4-6aac5dbc07a7">
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="241e7724-ac61-4fe7-bae4-b96f89974b3a">
+                <properties>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="httpLabel"/>
+                    <property value="localhost" name="host"/>
+                    <property value="8881" name="port"/>
+                    <property value="loan/loanrequest" name="path"/>
+                    <property name="method"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="followRedirects"/>
+                    <property name="connector-ref"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="user"/>
+                    <property name="password"/>
+                    <property name="contentType"/>
+                    <property name="keep-alive"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/cxf/soapComponent" name="SOAP" entity-id="9aa088ce-5f85-43d2-81fe-e854852e1e34">
+                <properties>
+                    <property name="configuration-ref"/>
+                    <property value="http://www.mulesoft.org/schema/mule/cxf/jaxws-service" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="configuration-ref"/>
+                    <property name="bindingId"/>
+                    <property value="80" name="port"/>
+                    <property name="namespace"/>
+                    <property name="service"/>
+                    <property value="org.mulesoft.samples.loan.LoanRequest" name="serviceClass"/>
+                    <property name="validationEnabled"/>
+                    <property name="mtomEnabled"/>
+                    <property name="wsdlLocation"/>
+                    <property name="enableMuleSoapHeaders"/>
+                </properties>
+            </pattern>
+            <scope type="org.mule.tooling.ui.modules.core.scope.enricher" name="Credit Status Service" entity-id="25415829-7c92-4345-bd1f-f8477e42cc55">
+                <properties>
+                    <property name="source"/>
+                    <property name="target"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/enrich;0">
+                        <property value="#[map-payload:creditstatus]" name="source"/>
+                        <property value="#[variable:creditRating]" name="target"/>
+                    </property-collection>
+                </properties>
+                <compartment entity-id="045ac928-70c7-4eb8-81fe-edc79a116ada">
+                    <lane hadOnlyOneElement="false" entity-id="68572a87-afa1-4296-adf1-69527faf61d8">
+                        <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="Credit Status Check" entity-id="27a5ad11-8d5d-4a48-8a48-eb0b6cec377f">
+                            <properties>
+<property value="one-way" name="exchange-pattern"/>
+<property value="request-response" name="exchange-pattern"/>
+<property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+<property name="httpLabel"/>
+<property value="localhost" name="host"/>
+<property value="8882" name="port"/>
+<property value="creditcheck/#[groovy: payload.customerId]" name="path"/>
+<property name="method"/>
+<property name="businessEventsLabel"/>
+<property name="tracking:enable-default-events"/>
+<property name="address"/>
+<property name="encoding"/>
+<property name="disableTransportTransformer"/>
+<property name="mimeType"/>
+<property name="responseTimeout"/>
+<property name="followRedirects"/>
+<property name="connector-ref"/>
+<property name="ref"/>
+<property name="transformer-refs"/>
+<property value="JSON_to_Object" name="responseTransformer-refs"/>
+<property name="user"/>
+<property name="password"/>
+<property name="contentType"/>
+<property name="keep-alive"/>
+                            </properties>
+                        </endpoint>
+                        <unknown entity-id="d8adfc6b-2cd0-4cb8-9561-bf33322d8ccc">
+                            <content>&lt;enrich xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot; source=&quot;#[map-payload:creditstatus]&quot; target=&quot;#[variable:creditRating]&quot;/&gt;</content>
+                        </unknown>
+                    </lane>
+                </compartment>
+            </scope>
+            <scope type="org.mule.tooling.ui.modules.core.scope.enricher" name="Interest Rate Service" entity-id="2ead0cb9-210c-463c-af17-35984216cb87">
+                <properties>
+                    <property value="#[xpath:/linked-hash-map/entry/double]" name="source"/>
+                    <property value="#[variable:rate]" name="target"/>
+                </properties>
+                <compartment entity-id="144342a0-cdd6-4242-aaf2-105cfefcc3bf">
+                    <lane hadOnlyOneElement="false" entity-id="ad2dae08-e32a-412c-9f3a-10d5ee92ddde">
+                        <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/jms/endpoint" name="Retrieve Interest Rate" entity-id="e494183c-d73f-4d40-984c-14dd00740197">
+                            <properties>
+<property value="one-way" name="exchange-pattern"/>
+<property value="request-response" name="exchange-pattern"/>
+<property value="interest.rate.in" name="queue"/>
+<property name="topic"/>
+<property name="businessEventsLabel"/>
+<property name="tracking:enable-default-events"/>
+<property name="address"/>
+<property name="mimeType"/>
+<property name="responseTimeout"/>
+<property name="encoding"/>
+<property name="durableName"/>
+<property name="disableTransportTransformer"/>
+<property name="disableTemporaryReplyToDestinations"/>
+<property value="Active_MQ" name="connector-ref"/>
+<property name="ref"/>
+<property value="Object_to_String" name="transformer-refs"/>
+<property name="responseTransformer-refs"/>
+                            </properties>
+                        </endpoint>
+                    </lane>
+                </compartment>
+            </scope>
+            <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="Data Warehouse - Store" entity-id="6a1daa84-8cd2-4964-bfda-db5e2d494de7">
+                <properties>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property name=""/>
+                    <property value="ins" name="queryKey"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="address"/>
+                    <property value="10000" name="responseTimeout"/>
+                    <property name="encoding"/>
+                    <property name="disableTransportTransformer"/>
+                    <property value="text/plain" name="mimeType"/>
+                    <property value="-1" name="queryTimeout"/>
+                    <property name="pollingFrequency"/>
+                    <property value="JDBC" name="connector-ref"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="responseTransformer-refs"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/scripting/groovyTransformer" name="Calculate Response" entity-id="e346f6db-9851-4d45-b61d-e229b0c5990c">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script;0">
+                        <property value="import org.mulesoft.samples.loan.LoanResp&#xA;                def lresp = new LoanResp()&#xA;                lresp.setCreditRating(message.getInvocationProperty('creditrating'))&#xA;&#x9;&#x9;&#x9;&#x9;lresp.setRate(message.getInvocationProperty('rate'))&#xA;                return lresp" name="text"/>
+                        <property value="Groovy" name="engine"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="HTTPCreditRatingService">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="USE_TRANSACTION_ID"/>
+            <property name="tracking:transaction-id"/>
+        </properties>
+        <lane hadOnlyOneElement="false" entity-id="8f00d337-b02a-4e65-a4b0-dde201a2db0a">
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="e05c32c3-d582-4232-a2e6-c06613edb8dc">
+                <properties>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="httpLabel"/>
+                    <property value="localhost" name="host"/>
+                    <property value="8882" name="port"/>
+                    <property value="creditcheck" name="path"/>
+                    <property name="method"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="followRedirects"/>
+                    <property name="connector-ref"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="user"/>
+                    <property name="password"/>
+                    <property name="contentType"/>
+                    <property name="keep-alive"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" name="Object to String" entity-id="8a573a72-2d53-42c8-b250-89bede926c94">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/scripting/groovyTransformer" name="Simulate Backend Rating System" entity-id="d256fa40-7c42-4c42-9ac4-e4edea385789">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script;0">
+                        <property value="def ran = Math.random()&#xA;&#x9;&#x9;&#x9;&#x9;if(ran &gt; 0.5){&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;return ['applicantId':'Test Person', 'creditstatus':'high']&#xA;&#x9;&#x9;&#x9;&#x9;}else{&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;return ['applicantId':'Test Person', 'creditstatus':'low']&#xA;&#x9;&#x9;&#x9;&#x9;}" name="text"/>
+                        <property value="Groovy" name="engine"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/json/object-to-json-transformer" name="Object to JSON" entity-id="6e19632e-2638-40ee-8660-6e344fb981f9">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property name="mapper-ref"/>
+                    <property name="sourceClass"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="JMSRateService">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="USE_TRANSACTION_ID"/>
+            <property name="tracking:transaction-id"/>
+        </properties>
+        <lane hadOnlyOneElement="false" entity-id="6dc4b3bb-aec8-4c86-99e4-e58526394576">
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/jms/endpoint" name="JMS" entity-id="0ce22405-ea1e-4035-a217-e7bd8cfb285d">
+                <properties>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="interest.rate.in" name="queue"/>
+                    <property name="topic"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="address"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="encoding"/>
+                    <property name="durableName"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="disableTemporaryReplyToDestinations"/>
+                    <property value="Active_MQ" name="connector-ref"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="responseTransformer-refs"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" name="Object to String" entity-id="15230dc8-444b-42cb-8f83-9bdc77d9702b">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/scripting/groovyTransformer" name="Simulate Get Rate" entity-id="e535226a-26e5-404a-af8a-897fd00a6cf8">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script;0">
+                        <property value="return ['rate':Math.random()]" name="text"/>
+                        <property value="Groovy" name="engine"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+            <pattern type="org.mule.tooling.ui.modules.core.pattern.objectToXmlTransformer" name="Object to XML" entity-id="ecb13fb3-34e5-4f2e-b496-202ec4b878ac">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property name="driverClass"/>
+                    <property name="acceptMuleMessage"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+</mule-configuration>

@@ -1,0 +1,6 @@
+----------------------------------------------------------------
+2012-01-13 17:14:00.943 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.6.1.0 - (938214): instance a816c00e-0134-d80f-cb22-000003b73170 
+on database directory memory:/Users/albinkjellin/Documents/mule/mulestudio/demos/creditcheck/loanreq   with class loader sun.misc.Launcher$AppClassLoader@69cd2e5f
+
+Database Class Loader started - derby.database.classpath=''
