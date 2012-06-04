@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" 
+    xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+    xmlns:twitter="http://www.mulesoft.org/schema/mule/twitter" 
+    xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf" 
+    xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+    xmlns:spring="http://www.springframework.org/schema/beans" 
+    xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+    xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    version="EE-3.3.0" 
+xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/twitter http://www.mulesoft.org/schema/mule/twitter/2.3/mule-twitter.xsd 
+http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd 
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd 
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/3.2/mule-tracking-ee.xsd ">
+    <twitter:config name="twitter" consumerKey="consumerKey" consumerSecret="consumerSecret" useSSL="false" doc:name="Twitter Configuration" doc:description="Global Twitter configuration information"/>
+    <flow name="order_management" doc:name="order_management">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="1081" path="orders" doc:name="HTTP" doc:description="Process HTTP request for web service."/>
+        <response>
+            <echo-component doc:name="Echo" doc:description="Echoes message payload."/>
+        </response>
+        <cxf:jaxws-service serviceClass="org.ordermgmt.ProcessOrderImpl" doc:name="SOAP" doc:description="Uses CXF to create a JAX-WS web service for processing orders."/>
+        <component class="org.ordermgmt.ProcessOrderImpl" doc:name="Summary" doc:description="Creates a summary of the order contents."/>
+        <choice doc:name="Choice">
+            <when expression="#[ognl:totalPrice &gt; 1000]">
+                <processor-chain>
+                    <component class="org.ordermgmt.ThirtyPercentDiscount" doc:name="30% Discount" doc:description="Use a 30% discount."/>
+                </processor-chain>
+            </when>
+            <when expression="#[ognl:totalPrice &gt; 500]">
+                <processor-chain>
+                    <component class="org.ordermgmt.TwentyPercentDiscount" doc:name="20% Discount" doc:description="Use a 20% discount."/>
+                </processor-chain>
+            </when>
+            <when expression="#[ognl:totalPrice &gt; 0]">
+                <processor-chain>
+                    <component class="org.ordermgmt.TenPercentDiscount" doc:name="10% Discount" doc:description="Use a 10% discount."/>
+                </processor-chain>
+            </when>
+        </choice>
+        <async doc:name="Async" doc:description="Asynchronous block of execution">
+            <component class="org.ordermgmt.TweetMaker" doc:name="Create Tweet" doc:description="Creates a message to be sent as a status message to Twitter."/>
+            <twitter:update-status config-ref="twitter" status="#[payload]" doc:name="Update Status" doc:description="Update Twitter status with message."/>
+        </async>
+    </flow>
+</mule>

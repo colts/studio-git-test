@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-project xmlns="http://www.mulesoft.com/tooling/project" runtimeId="org.mule.servers.3.3.0.EE">
+    <name>example-discounter</name>
+    <description>Processes an XML order, creating an order summary and applying a tiered discount based on total order price. Posts updates to a Twitter status as orders are processed.</description>
+</mule-project>
