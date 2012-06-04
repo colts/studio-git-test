@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="fufillment">
+    <global-element type="http://www.mulesoft.org/schema/mule/sfdc/config" name="SalesForce Configuration" entity-id="bc8d0372-d7db-406b-b07d-e7d99d7fd2e7">
+        <properties>
+            <property value="sfconfig" name="name"/>
+            <property value="username" name="username"/>
+            <property value="password" name="password"/>
+            <property value="TOKEN" name="securityToken"/>
+            <property name="url"/>
+            <property name="proxyHost"/>
+            <property name="proxyPort"/>
+            <property name="proxyUsername"/>
+            <property name="proxyPassword"/>
+            <property name="objectStore-ref"/>
+        </properties>
+        <description>Global configuration for Salesforce operations</description>
+    </global-element>
+    <global-element type="http://www.mulesoft.org/schema/mule/cxf/configuration" name="CXF Configuration" entity-id="2122a15f-279c-4e39-a9f2-b3be0ffd2d82">
+        <properties>
+            <property name="configurationLocation"/>
+            <property name="enableMuleSoapHeaders"/>
+            <property value="false" name="initializeStaticBusInstance"/>
+        </properties>
+        <description>Global CXF Configuration</description>
+    </global-element>
+    <flow SubFlow="false" name="fulfillment">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="USE_TRANSACTION_ID"/>
+            <property name="tracking:transaction-id"/>
+        </properties>
+        <lane hadOnlyOneElement="false" entity-id="7463fc31-7c09-451f-878d-94f988e93bce">
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="660ce819-d73a-4810-a35a-f8e2ddb496eb">
+                <properties>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="httpLabel"/>
+                    <property value="localhost" name="host"/>
+                    <property value="1080" name="port"/>
+                    <property value="order" name="path"/>
+                    <property name="method"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="followRedirects"/>
+                    <property name="connector-ref"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="user"/>
+                    <property name="password"/>
+                    <property name="contentType"/>
+                    <property name="keep-alive"/>
+                </properties>
+                <description>Process HTTP reqests or responses.</description>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/cxf/soapComponent" name="SOAP" entity-id="c1d9bb2d-4306-443f-9cd8-a7058bbb9c9d">
+                <properties>
+                    <property name="configuration-ref"/>
+                    <property value="http://www.mulesoft.org/schema/mule/cxf/jaxws-service" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="configuration-ref"/>
+                    <property name="bindingId"/>
+                    <property name="port"/>
+                    <property name="namespace"/>
+                    <property name="service"/>
+                    <property value="org.ordermgmt.IProcessOrder" name="serviceClass"/>
+                    <property name="validationEnabled"/>
+                    <property name="mtomEnabled"/>
+                    <property name="wsdlLocation"/>
+                    <property name="enableMuleSoapHeaders"/>
+                </properties>
+                <description>Make a web service available via CXF</description>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/component" name="Process Order" entity-id="bc4edd31-787f-4e08-b91d-dd2c2428bfeb">
+                <properties>
+                    <property value="org.ordermgmt.ProcessOrderImpl" name="class"/>
+                </properties>
+                <description>Invoke a Java component</description>
+            </pattern>
+            <scope type="org.mule.tooling.ui.modules.core.scope.async" name="Async" entity-id="83735d7a-6814-4a98-9f3d-07921ea2c5b3">
+                <properties>
+                    <property name="processingStrategy"/>
+                </properties>
+                <description>Asynchronous block of execution</description>
+                <compartment entity-id="bfabbd81-a318-4818-a753-b70d6c472b4b">
+                    <lane hadOnlyOneElement="false" entity-id="b52f736f-2310-4866-9d2b-567baf0f9267">
+                        <splitter type="org.mule.tooling.ui.modules.core.pattern.all" name="All" entity-id="8f5d69a2-7856-4076-a43a-46ff2e9c45b6">
+                            <pattern type="org.mule.tooling.ui.modules.core.pattern.all" name="All" entity-id="adbf1278-5306-4c1c-9a6b-e0a6c52a7220"/>
+                            <compartment entity-id="e19bb021-33ed-4c84-9053-536d2f21f6bf">
+<lane hadOnlyOneElement="false" entity-id="f1160285-3460-4feb-bc89-059d3fa28265">
+    <pattern type="org.mule.tooling.ui.modules.core.pattern.splitter" name="Split Items" entity-id="bd76884f-37e1-4141-8919-9d9e0eabe9fa">
+        <properties>
+            <property name="enableCorrelation"/>
+            <property value="#[ognl:items]" name="expression"/>
+            <property name="businessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+        </properties>
+        <description>Splits the payload based on an expression</description>
+    </pattern>
+    <splitter type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="82f6cb61-7b75-4c7c-94ac-1a87ed94bc81">
+        <properties>
+            <property-collection name="6b32187d-918b-40b0-8314-2bdee07999dc">
+                <property value="#[ognl:manufacturer == 'Sony']" name="choice.expression"/>
+            </property-collection>
+            <property-collection name="fa5b690c-2cfc-46c8-8dd2-481d7b8cc45f">
+                <property value="#[ognl:manufacturer == 'Logitech']" name="choice.expression"/>
+            </property-collection>
+        </properties>
+        <pattern type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="2332ae6c-10a0-4444-9fbe-d051fc36d8cb"/>
+        <compartment entity-id="3e928d75-2cd7-4265-8842-37db06de3009">
+            <lane hadOnlyOneElement="false" entity-id="6b32187d-918b-40b0-8314-2bdee07999dc">
+                <pattern type="org.mule.tooling.ui.modules.core.pattern.customTransformer" name="Sony XForm" entity-id="f24ed7a4-2fe4-4029-b08a-6fbc79aab1b2">
+                    <properties>
+                        <property name="returnClass"/>
+                        <property name="ignoreBadInput"/>
+                        <property name="encoding"/>
+                        <property name="mimeType"/>
+                        <property value="org.ordermgmt.ItemAsXml" name="class"/>
+                    </properties>
+                    <description>Transformer that delegates to a Java class.</description>
+                </pattern>
+                <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/file/endpoint" name="Sony Order" entity-id="2ac65400-5b42-4cea-8f98-242e0d0d8092">
+                    <properties>
+                        <property value="one-way" name="exchange-pattern"/>
+                        <property value="./" name="path"/>
+                        <property name="outputPattern"/>
+                        <property name="moveToPattern"/>
+                        <property name="moveToDirectory"/>
+                        <property name="pollingFrequency"/>
+                        <property name="fileAge"/>
+                        <property name="businessEventsLabel"/>
+                        <property name="tracking:enable-default-events"/>
+                        <property name="address"/>
+                        <property name="responseTimeout"/>
+                        <property name="encoding"/>
+                        <property name="disableTransportTransformer"/>
+                        <property name="mimeType"/>
+                        <property name="comparator"/>
+                        <property name="reverseOrder"/>
+                        <property name="connector-ref"/>
+                        <property name="ref"/>
+                        <property name="transformer-refs"/>
+                    </properties>
+                    <description>Read a file from the filesystem</description>
+                </endpoint>
+            </lane>
+            <lane hadOnlyOneElement="false" entity-id="fa5b690c-2cfc-46c8-8dd2-481d7b8cc45f">
+                <pattern type="org.mule.tooling.ui.modules.core.pattern.customTransformer" name="Logitech XForm" entity-id="33929b47-5058-4e61-bfb4-73d4deaf78e3">
+                    <properties>
+                        <property name="returnClass"/>
+                        <property name="ignoreBadInput"/>
+                        <property name="encoding"/>
+                        <property name="mimeType"/>
+                        <property value="org.ordermgmt.ItemAsXml" name="class"/>
+                    </properties>
+                    <description>Transformer that delegates to a Java class.</description>
+                </pattern>
+                <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/file/endpoint" name="Logitech Order" entity-id="26ad20b5-e557-4fdf-b2fb-f0c6a1fd681e">
+                    <properties>
+                        <property value="one-way" name="exchange-pattern"/>
+                        <property value="./" name="path"/>
+                        <property name="outputPattern"/>
+                        <property name="moveToPattern"/>
+                        <property name="moveToDirectory"/>
+                        <property name="pollingFrequency"/>
+                        <property name="fileAge"/>
+                        <property name="businessEventsLabel"/>
+                        <property name="tracking:enable-default-events"/>
+                        <property name="address"/>
+                        <property name="responseTimeout"/>
+                        <property name="encoding"/>
+                        <property name="disableTransportTransformer"/>
+                        <property name="mimeType"/>
+                        <property name="comparator"/>
+                        <property name="reverseOrder"/>
+                        <property name="connector-ref"/>
+                        <property name="ref"/>
+                        <property name="transformer-refs"/>
+                    </properties>
+                    <description>Read a file from the filesystem</description>
+                </endpoint>
+            </lane>
+        </compartment>
+    </splitter>
+</lane>
+<lane hadOnlyOneElement="false" entity-id="ae0c4169-74aa-4998-856d-90fca09497f1">
+    <pattern type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" name="Salesforce Contact" entity-id="21d47cc3-2462-4ca8-908c-887c9a5785c1">
+        <properties>
+            <property value="sfconfig" name="config-ref"/>
+            <property value="http://www.mulesoft.org/schema/mule/sfdc/create-single" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+            <property value="sfconfig" name="config-ref"/>
+            <property value="Contact" name="type"/>
+            <property name=""/>
+            <property name="username"/>
+            <property name="password"/>
+            <property name="securityToken"/>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/create-single-object;0">
+                <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/create-single-object-each;1">
+                    <property value="#[groovy:payload.customer.firstName]" name="value"/>
+                    <property value="FirstName" name="key"/>
+                </property-collection>
+                <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/create-single-object-each;2">
+                    <property value="#[groovy:payload.customer.lastName]" name="value"/>
+                    <property value="LastName" name="key"/>
+                </property-collection>
+            </property-collection>
+        </properties>
+        <description>Creates a Salesforce contact for the person placing the order.</description>
+    </pattern>
+</lane>
+                            </compartment>
+                        </splitter>
+                    </lane>
+                </compartment>
+            </scope>
+        </lane>
+    </flow>
+</mule-configuration>

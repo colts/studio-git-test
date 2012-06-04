@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" 
+      xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+      xmlns:file="http://www.mulesoft.org/schema/mule/file" 
+      xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf" 
+      xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+      xmlns:spring="http://www.springframework.org/schema/beans" 
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:salesforce="http://www.mulesoft.org/schema/mule/sfdc" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      version="EE-3.3.0" 
+xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd 
+http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd 
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/4.0/mule-sfdc.xsd 
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd 
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <sfdc:config name="sfconfig" username="username" password="password" securityToken="TOKEN" doc:name="SalesForce Configuration" doc:description="Global configuration for Salesforce operations"/>
+    <cxf:configuration initializeStaticBusInstance="false" doc:name="CXF Configuration" doc:description="Global CXF Configuration"/>
+    <flow name="fulfillment" doc:name="fulfillment">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="1080" path="order" doc:name="HTTP" doc:description="Process HTTP reqests or responses."/>
+        <cxf:jaxws-service serviceClass="org.ordermgmt.IProcessOrder" doc:name="SOAP" doc:description="Make a web service available via CXF"/>
+        <component class="org.ordermgmt.ProcessOrderImpl" doc:name="Process Order" doc:description="Invoke a Java component"/>
+        <async doc:name="Async" doc:description="Asynchronous block of execution">
+            <all doc:name="All">
+                <processor-chain>
+                    <splitter expression="#[ognl:items]" doc:name="Split Items" doc:description="Splits the payload based on an expression"/>
+                    <choice doc:name="Choice">
+                        <when expression="#[ognl:manufacturer == 'Sony']">
+                            <processor-chain>
+                                <custom-transformer class="org.ordermgmt.ItemAsXml" doc:name="Sony XForm" doc:description="Transformer that delegates to a Java class."/>
+                                <file:outbound-endpoint path="./" doc:name="Sony Order" doc:description="Read a file from the filesystem"/>
+                            </processor-chain>
+                        </when>
+                        <when expression="#[ognl:manufacturer == 'Logitech']">
+                            <processor-chain>
+                                <custom-transformer class="org.ordermgmt.ItemAsXml" doc:name="Logitech XForm" doc:description="Transformer that delegates to a Java class."/>
+                                <file:outbound-endpoint path="./" doc:name="Logitech Order" doc:description="Read a file from the filesystem"/>
+                            </processor-chain>
+                        </when>
+                    </choice>
+                </processor-chain>
+                <processor-chain>
+                    <sfdc:create-single config-ref="sfconfig" type="Contact" doc:name="Salesforce Contact" doc:description="Creates a Salesforce contact for the person placing the order.">
+                        <sfdc:object>
+                            <sfdc:object key="FirstName">#[groovy:payload.customer.firstName]</sfdc:object>
+                            <sfdc:object key="LastName">#[groovy:payload.customer.lastName]</sfdc:object>
+                        </sfdc:object>
+                    </sfdc:create-single>
+                </processor-chain>
+            </all>
+        </async>
+    </flow>
+</mule>
